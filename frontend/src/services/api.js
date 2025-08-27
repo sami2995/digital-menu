@@ -1,6 +1,6 @@
 import axios from "axios";
 
 // Backend URL
-const API = axios.create({ baseURL: "process.env.REACT_APP_API_URL" });
+const API = axios.create({ baseURL: "https://digital-menu-2lam.onrender.com/" });
 
 export default API;
