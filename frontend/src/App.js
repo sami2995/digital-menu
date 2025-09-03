@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import API from "./services/api";
 import AdminPage from "./AdminPage";
+import "./App.css";
+
 
 function App() {
   const [menu, setMenu] = useState([]);
