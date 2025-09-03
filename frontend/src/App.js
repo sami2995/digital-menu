@@ -112,21 +112,34 @@ function App() {
                 <h2 className="mb-4 text-center fw-bold">Our Menu</h2>
 
                 {/* Search + Filter */}
-                <div className="d-flex flex-wrap justify-content-center mb-4">
-                  {["All", "Starters", "Mains", "Drinks", "Desserts"].map(
-                    (cat) => (
-                      <button
-                        key={cat}
-                        onClick={() => setCategory(cat)}
-                        className={`btn me-2 mb-2 ${
-                          category === cat ? "btn-primary" : "btn-outline-primary"
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    )
-                  )}
-                </div>
+<div className="d-flex flex-wrap justify-content-center mb-4">
+  {["All", "Starters", "Mains", "Drinks", "Desserts"].map((cat) => {
+    // Pick color based on category
+    let btnClass =
+      cat === "Starters"
+        ? "success"
+        : cat === "Mains"
+        ? "warning"
+        : cat === "Drinks"
+        ? "info"
+        : cat === "Desserts"
+        ? "danger"
+        : "primary"; // default for "All"
+
+    return (
+      <button
+        key={cat}
+        onClick={() => setCategory(cat)}
+        className={`btn me-2 mb-2 ${
+          category === cat ? `btn-${btnClass}` : `btn-outline-${btnClass}`
+        }`}
+      >
+        {cat}
+      </button>
+    );
+  })}
+</div>
+
 
                 <div className="mb-4 text-center">
                   <input
