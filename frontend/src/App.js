@@ -8,6 +8,8 @@ import CategoryFilter from "./components/CategoryFilter";
 import SearchBar from "./components/SearchBar";
 import MenuGrid from "./components/MenuGrid";
 import Footer from "./components/Footer";
+import './App.css';
+
 
 function App() {
   const [menu, setMenu] = useState([]);
