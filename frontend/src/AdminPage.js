@@ -90,41 +90,19 @@ function AdminPage() {
     setEditId(null);
   };
 
-  // --- Render login if not logged in ---
-  if (!isLoggedIn) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-        <div className="card p-4 shadow-lg col-md-4">
-          <h3 className="text-center mb-4">Admin Login</h3>
-          <form onSubmit={handleLogin}>
-            <div className="mb-3">
-              <label className="form-label">Username</label>
-              <input
-                type="text"
-                className="form-control"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Password</label>
-              <input
-                type="password"
-                className="form-control"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className="btn btn-primary w-100">
-              Login
-            </button>
-          </form>
-        </div>
+ // --- Render login if not logged in ---
+if (!isLoggedIn) {
+  return (
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+      <div className="card p-4 shadow-lg col-md-4 text-center">
+        <h3 className="mb-4">⚠️ Admin access is temporarily disabled for security.</h3>
+        <p>Please wait until proper backend authentication is implemented.</p>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+  
 
   // --- Render admin dashboard if logged in ---
   return (
