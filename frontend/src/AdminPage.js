@@ -27,17 +27,20 @@ function AdminPage() {
       .then((res) => setMenuItems(res.data))
       .catch((err) => console.error(err));
   };
-
+/*
   // --- Login handler ---
   const handleLogin = (e) => {
     e.preventDefault();
+    
     if (username === "admin" && password === "1234.") {
       setIsLoggedIn(true);
-    } else {
+    } 
+      
+      else {
       alert("Invalid username or password");
     }
   };
-
+*/
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUsername("");
