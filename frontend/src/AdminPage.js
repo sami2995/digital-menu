@@ -5,6 +5,8 @@ function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [menuItems, setMenuItems] = useState([]);
   const [form, setForm] = useState({
@@ -17,34 +19,77 @@ function AdminPage() {
   const [editId, setEditId] = useState(null);
 
   useEffect(() => {
+    const storedToken = localStorage.getItem("adminToken");
+
+    if (storedToken) {
+      API.defaults.headers.common.Authorization = `Bearer ${storedToken}`;
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (isLoggedIn) {
       fetchMenu();
+    } else {
+      setErrorMessage("");
     }
   }, [isLoggedIn]);
 
   const fetchMenu = () => {
     API.get("/api/menu")
-      .then((res) => setMenuItems(res.data))
-      .catch((err) => console.error(err));
+      .then((res) => {
+        setMenuItems(res.data);
+        setErrorMessage("");
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          alert("Session expired. Please log in again.");
+          handleLogout();
+        } else {
+          const message =
+            err.response?.data?.message ||
+            "Unable to load menu items. Please try again.";
+          setErrorMessage(message);
+        }
+      });
   };
-/*
-  // --- Login handler ---
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    
-    if (username === "admin" && password === "1234.") {
-      setIsLoggedIn(true);
-    } 
-      
-      else {
-      alert("Invalid username or password");
+    setIsSubmitting(true);
+
+    try {
+      const response = await API.post("/api/auth/login", {
+        username,
+        password,
+      });
+
+      const token = response.data?.token;
+      if (token) {
+        API.defaults.headers.common.Authorization = `Bearer ${token}`;
+        localStorage.setItem("adminToken", token);
+        setIsLoggedIn(true);
+        setPassword("");
+        setErrorMessage("");
+      } else {
+        alert("No token received from server.");
+      }
+    } catch (err) {
+      const message =
+        err.response?.data?.message || "Invalid username or password";
+      alert(message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-*/
+
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUsername("");
     setPassword("");
+    setMenuItems([]);
+    setErrorMessage("");
+    delete API.defaults.headers.common.Authorization;
+    localStorage.removeItem("adminToken");
   };
 
   const handleSubmit = (e) => {
@@ -56,7 +101,14 @@ function AdminPage() {
           resetForm();
           fetchMenu();
         })
-        .catch(() => alert("Error updating item"));
+        .catch((err) => {
+          if (err.response?.status === 401) {
+            alert("Session expired. Please log in again.");
+            handleLogout();
+          } else {
+            alert("Error updating item");
+          }
+        });
     } else {
       API.post("/api/menu", form)
         .then(() => {
@@ -64,7 +116,14 @@ function AdminPage() {
           resetForm();
           fetchMenu();
         })
-        .catch(() => alert("Error adding item"));
+        .catch((err) => {
+          if (err.response?.status === 401) {
+            alert("Session expired. Please log in again.");
+            handleLogout();
+          } else {
+            alert("Error adding item");
+          }
+        });
     }
   };
 
@@ -77,7 +136,14 @@ function AdminPage() {
     if (window.confirm("Are you sure you want to delete this item?")) {
       API.delete(`/api/menu/${id}`)
         .then(() => fetchMenu())
-        .catch(() => alert("Error deleting item"));
+        .catch((err) => {
+          if (err.response?.status === 401) {
+            alert("Session expired. Please log in again.");
+            handleLogout();
+          } else {
+            alert("Error deleting item");
+          }
+        });
     }
   };
 
@@ -94,9 +160,39 @@ function AdminPage() {
 if (!isLoggedIn) {
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-      <div className="card p-4 shadow-lg col-md-4 text-center">
-        <h3 className="mb-4">⚠️ Admin access is temporarily disabled for security.</h3>
-        <p>Please wait until proper backend authentication is implemented.</p>
+      <div className="card p-4 shadow-lg col-md-4">
+        <h3 className="mb-3 text-center">Admin Login</h3>
+        <form onSubmit={handleLogin}>
+          <div className="mb-3">
+            <label className="form-label">Username</label>
+            <input
+              type="text"
+              className="form-control"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              autoComplete="username"
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              className="form-control"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+            />
+          </div>
+          <button
+            type="submit"
+            className="btn btn-primary w-100"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Logging in..." : "Login"}
+          </button>
+        </form>
       </div>
     </div>
   );
@@ -118,6 +214,11 @@ if (!isLoggedIn) {
       {/* Form Card */}
       <div className="card p-4 shadow-sm mb-5">
         <h4 className="mb-4">{editId ? "✏️ Edit Menu Item" : "➕ Add New Menu Item"}</h4>
+        {errorMessage && (
+          <div className="alert alert-warning" role="alert">
+            {errorMessage}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="row g-3">
           <div className="col-md-6">
             <label className="form-label">Name:</label>
