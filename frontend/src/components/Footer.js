@@ -8,9 +8,32 @@ function Footer() {
         <p className="mb-3">📍 123 Main Street, Food City</p>
         <div className="mb-3">
           🌐 Follow us:
-          <a href="#" className="text-white ms-2">Facebook</a> | 
-          <a href="#" className="text-white ms-2">Instagram</a> | 
-          <a href="#" className="text-white ms-2">Twitter</a>
+          <a
+            href="https://www.facebook.com"
+            className="text-white ms-2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Facebook
+          </a>{" "}
+          |
+          <a
+            href="https://www.instagram.com"
+            className="text-white ms-2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Instagram
+          </a>{" "}
+          |
+          <a
+            href="https://www.twitter.com"
+            className="text-white ms-2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Twitter
+          </a>
         </div>
         <p className="mb-3">🕒 Open Daily: 10:00 AM – 11:00 PM</p>
         <p className="mb-0">

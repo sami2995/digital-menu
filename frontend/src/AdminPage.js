@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import API from "./services/api";
 
 function AdminPage() {
@@ -27,15 +27,17 @@ function AdminPage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      fetchMenu();
-    } else {
-      setErrorMessage("");
-    }
-  }, [isLoggedIn]);
+  const handleLogout = useCallback(() => {
+    setIsLoggedIn(false);
+    setUsername("");
+    setPassword("");
+    setMenuItems([]);
+    setErrorMessage("");
+    delete API.defaults.headers.common.Authorization;
+    localStorage.removeItem("adminToken");
+  }, []);
 
-  const fetchMenu = () => {
+  const fetchMenu = useCallback(() => {
     API.get("/api/menu")
       .then((res) => {
         setMenuItems(res.data);
@@ -52,7 +54,14 @@ function AdminPage() {
           setErrorMessage(message);
         }
       });
-  };
+  }, [handleLogout]);
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchMenu();
+    } else {
+      setErrorMessage("");
+    }
+  }, [isLoggedIn, fetchMenu]);
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -80,16 +89,6 @@ function AdminPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUsername("");
-    setPassword("");
-    setMenuItems([]);
-    setErrorMessage("");
-    delete API.defaults.headers.common.Authorization;
-    localStorage.removeItem("adminToken");
   };
 
   const handleSubmit = (e) => {
