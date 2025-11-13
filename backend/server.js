@@ -10,10 +10,14 @@ app.use(cors());
 app.use(express.json());
 
 const {
-  ADMIN_USERNAME = "admins",
-ADMIN_PASSWORD = "admin123@#$",
-  JWT_SECRET = "supersecretkey123",
+  ADMIN_USERNAME = "",
+  ADMIN_PASSWORD = "",
+  JWT_SECRET = "",
 } = process.env;
+
+if (!ADMIN_USERNAME || !ADMIN_PASSWORD || !JWT_SECRET) {
+  throw new Error("ADMIN_USERNAME, ADMIN_PASSWORD, and JWT_SECRET must be set.");
+}
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
