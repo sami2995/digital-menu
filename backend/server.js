@@ -29,7 +29,10 @@ const menuSchema = new mongoose.Schema({
   price: Number,
   description: String,
   category: String,
-   image: String 
+  image: String,
+  isSpicy: { type: Boolean, default: false },
+  isVegetarian: { type: Boolean, default: false },
+  isRecommended: { type: Boolean, default: false },
 });
 
 const MenuItem = mongoose.model("MenuItem", menuSchema);

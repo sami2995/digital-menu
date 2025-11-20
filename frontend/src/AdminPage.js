@@ -9,13 +9,17 @@ function AdminPage() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const [menuItems, setMenuItems] = useState([]);
-  const [form, setForm] = useState({
+  const getBlankForm = () => ({
     name: "",
     price: "",
     description: "",
     category: "",
     image: "",
+    isSpicy: false,
+    isVegetarian: false,
+    isRecommended: false,
   });
+  const [form, setForm] = useState(getBlankForm);
   const [editId, setEditId] = useState(null);
 
   useEffect(() => {
@@ -93,14 +97,24 @@ function AdminPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const formData = {
+      ...form,
+      price: Number(form.price) || 0,
+      isSpicy: Boolean(form.isSpicy),
+      isVegetarian: Boolean(form.isVegetarian),
+      isRecommended: Boolean(form.isRecommended),
+    };
+    
     if (editId) {
-      API.put(`/api/menu/${editId}`, form)
-        .then(() => {
+      API.put(`/api/menu/${editId}`, formData)
+        .then((res) => {
+          console.log("Updated item:", res.data);
           alert("Item updated!");
           resetForm();
           fetchMenu();
         })
         .catch((err) => {
+          console.error("Update error:", err);
           if (err.response?.status === 401) {
             alert("Session expired. Please log in again.");
             handleLogout();
@@ -109,13 +123,15 @@ function AdminPage() {
           }
         });
     } else {
-      API.post("/api/menu", form)
-        .then(() => {
+      API.post("/api/menu", formData)
+        .then((res) => {
+          console.log("Created item:", res.data);
           alert("Item added!");
           resetForm();
           fetchMenu();
         })
         .catch((err) => {
+          console.error("Create error:", err);
           if (err.response?.status === 401) {
             alert("Session expired. Please log in again.");
             handleLogout();
@@ -127,7 +143,16 @@ function AdminPage() {
   };
 
   const handleEdit = (item) => {
-    setForm(item);
+    setForm({
+      name: item.name || "",
+      price: item.price ?? "",
+      description: item.description || "",
+      category: item.category || "",
+      image: item.image || "",
+      isSpicy: Boolean(item.isSpicy),
+      isVegetarian: Boolean(item.isVegetarian),
+      isRecommended: Boolean(item.isRecommended),
+    });
     setEditId(item._id);
   };
 
@@ -147,11 +172,12 @@ function AdminPage() {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
   const resetForm = () => {
-    setForm({ name: "", price: "", description: "", category: "", image: "" });
+    setForm(getBlankForm());
     setEditId(null);
   };
 
@@ -277,6 +303,50 @@ if (!isLoggedIn) {
               value={form.image}
               onChange={handleChange}
             />
+          </div>
+          <div className="col-12">
+            <label className="form-label d-block mb-2">Highlights:</label>
+            <div className="d-flex flex-wrap gap-3">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="isRecommended"
+                  name="isRecommended"
+                  checked={form.isRecommended}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor="isRecommended">
+                  ⭐ Recommended
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="isSpicy"
+                  name="isSpicy"
+                  checked={form.isSpicy}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor="isSpicy">
+                  🌶️ Spicy
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="isVegetarian"
+                  name="isVegetarian"
+                  checked={form.isVegetarian}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor="isVegetarian">
+                  🥗 Vegetarian
+                </label>
+              </div>
+            </div>
           </div>
           <div className="col-12">
             <button type="submit" className="btn btn-success w-100">
