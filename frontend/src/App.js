@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import API from "./services/api";
 import AdminPage from "./AdminPage";
 import Navbar from "./components/Navbar";
@@ -120,6 +121,7 @@ function App() {
 
   return (
     <Router>
+      <Analytics />
       <Navbar />
       <Routes>
         <Route
