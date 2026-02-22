@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import API from "./services/api";
+import useFavorites from "./hooks/useFavorites";
 import AdminPage from "./AdminPage";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -12,6 +13,7 @@ import PriceFilter from "./components/PriceFilter";
 import HighlightFilter from "./components/HighlightFilter";
 import MenuItemModal from "./components/MenuItemModal";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 import "./App.css";
 
 function App() {
@@ -32,12 +34,14 @@ function App() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
+  const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
   useEffect(() => {
     setIsLoading(true);
     API.get("/api/menu")
       .then((res) => {
-        console.log("Menu data received:", res.data);
         setMenu(res.data);
         setFilteredMenu(res.data);
       })
@@ -72,6 +76,13 @@ function App() {
 
   useEffect(() => {
     let items = [...menu];
+
+    if (showFavoritesOnly) {
+      items = items.filter((item) =>
+        favorites.includes(item._id || item.name)
+      );
+    }
+
     if (category !== "All") {
       items = items.filter((item) => item.category === category);
     }
@@ -110,7 +121,7 @@ function App() {
     }
 
     setFilteredMenu(items);
-  }, [category, search, priceFilter, highlightFilters, menu]);
+  }, [category, search, priceFilter, highlightFilters, menu, showFavoritesOnly, favorites]);
 
   const toggleHighlight = useCallback((key) => {
     setHighlightFilters((prev) => ({
@@ -122,43 +133,89 @@ function App() {
   return (
     <Router>
       <Analytics />
-      <Navbar />
       <Routes>
         <Route
           path="/"
           element={
-            <>
+            <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] transition-colors duration-300">
+              <Navbar favoritesCount={favorites.length} />
               <Hero />
-              <div id="menu" className="container mt-5">
-                <h2 className="mb-4 text-center fw-bold">Our Menu</h2>
-                <CategoryFilter category={category} setCategory={setCategory} />
-                <div className="row g-3 align-items-center mb-4">
-                  <div className="col-12 col-lg-4">
-                    <SearchBar search={search} setSearch={setSearch} />
-                  </div>
-                  <div className="col-12 col-md-6 col-lg-4">
-                    <PriceFilter value={priceFilter} onChange={setPriceFilter} />
-                  </div>
-                  <div className="col-12 col-md-6 col-lg-4">
-                    <HighlightFilter
-                      highlights={highlightFilters}
-                      availability={highlightAvailability}
-                      onToggle={toggleHighlight}
-                    />
-                  </div>
+              <main id="menu" className="max-w-7xl mx-auto px-4 py-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-stone-900 dark:text-stone-100">
+                  Our Menu
+                </h2>
+
+                <CategoryFilter
+                  category={category}
+                  setCategory={setCategory}
+                />
+
+                {/* Favorites toggle */}
+                <div className="flex justify-center mb-6">
+                  <button
+                    onClick={() => setShowFavoritesOnly((prev) => !prev)}
+                    className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium
+                      border transition-all duration-200
+                      ${
+                        showFavoritesOnly
+                          ? "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-300 dark:border-red-600 shadow-sm"
+                          : "bg-transparent text-stone-500 dark:text-stone-400 border-stone-200 dark:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-800"
+                      }`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-4 h-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Favorites Only
+                    {favorites.length > 0 && (
+                      <span
+                        className={`inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full
+                        ${
+                          showFavoritesOnly
+                            ? "bg-red-500 text-white"
+                            : "bg-stone-200 dark:bg-stone-600 text-stone-600 dark:text-stone-300"
+                        }`}
+                      >
+                        {favorites.length}
+                      </span>
+                    )}
+                  </button>
                 </div>
+
+                {/* Filters row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                  <SearchBar search={search} setSearch={setSearch} />
+                  <PriceFilter value={priceFilter} onChange={setPriceFilter} />
+                  <HighlightFilter
+                    highlights={highlightFilters}
+                    availability={highlightAvailability}
+                    onToggle={toggleHighlight}
+                  />
+                </div>
+
                 <MenuGrid
                   filteredMenu={filteredMenu}
                   isLoading={isLoading}
                   onSelectItem={setSelectedItem}
+                  isFavorite={isFavorite}
+                  onToggleFavorite={toggleFavorite}
                 />
-              </div>
+              </main>
               <Footer />
               <MenuItemModal
                 item={selectedItem}
                 onClose={() => setSelectedItem(null)}
               />
-            </>
+              <ScrollToTop />
+            </div>
           }
         />
         <Route path="/admin" element={<AdminPage />} />

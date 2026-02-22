@@ -1,164 +1,109 @@
-.App {
-  text-align: center;
+/* Card entrance animations with stagger */
+.card-animate {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
-}
-
-.card img {
-  transition: transform 0.4s ease;
-}
-
-.card:hover img {
-  transform: scale(1.05);
-}
-
-.price-filter,
-.highlight-filter {
-  border-radius: 12px;
-}
-
-.highlight-filter .btn.active {
-  background-color: #f8d775;
-  border-color: #f8d775;
-  color: #3a2c00;
-}
-
-.highlight-filter .btn.disabled-highlight {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.skeleton-card {
-  background: #f8f9fa;
-}
-
-.skeleton {
-  position: relative;
-  overflow: hidden;
-  background-color: #e9ecef;
-  border-radius: 8px;
-}
-
-.skeleton::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -150px;
-  height: 100%;
-  width: 150px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0.6),
-    rgba(255, 255, 255, 0)
-  );
-  animation: skeleton-loading 1.2s infinite;
-}
-
-.skeleton-img {
-  height: 220px;
-  border-radius: 12px 12px 0 0;
-}
-
-.skeleton-title {
-  height: 20px;
-  width: 60%;
-}
-
-.skeleton-text {
-  height: 14px;
-  width: 90%;
-}
-
-.skeleton-badge {
-  height: 22px;
-  width: 60px;
-}
-
-@keyframes skeleton-loading {
+@keyframes fadeInUp {
   0% {
-    transform: translateX(-100%);
+    opacity: 0;
+    transform: translateY(24px);
   }
   100% {
-    transform: translateX(200%);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.empty-state {
-  max-width: 420px;
+/* Heart pulse animation */
+.heart-pulse {
+  animation: heartBeat 0.3s ease-in-out;
 }
 
-.menu-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  z-index: 1080;
+@keyframes heartBeat {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
-.menu-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+/* Hero text entrance */
+.hero-text-enter {
+  animation: heroSlideIn 0.8s ease-out forwards;
 }
 
-.menu-modal {
-  position: relative;
-  max-width: 520px;
-  width: 100%;
-  background-color: #ffffff;
-  border-radius: 16px;
-  z-index: 1090;
+@keyframes heroSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.menu-modal .btn-close {
-  display: block;
-  margin-left: auto;
+/* Modal backdrop animation */
+.modal-backdrop-enter {
+  animation: fadeIn 0.2s ease-out forwards;
 }
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.modal-content-enter {
+  animation: modalSlideIn 0.3s ease-out forwards;
+}
+
+@keyframes modalSlideIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Scroll-to-top button animation */
+.scroll-btn-enter {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+.scroll-btn-exit {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

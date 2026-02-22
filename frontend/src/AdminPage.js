@@ -24,7 +24,6 @@ function AdminPage() {
 
   useEffect(() => {
     const storedToken = localStorage.getItem("adminToken");
-
     if (storedToken) {
       API.defaults.headers.common.Authorization = `Bearer ${storedToken}`;
       setIsLoggedIn(true);
@@ -59,6 +58,7 @@ function AdminPage() {
         }
       });
   }, [handleLogout]);
+
   useEffect(() => {
     if (isLoggedIn) {
       fetchMenu();
@@ -66,16 +66,15 @@ function AdminPage() {
       setErrorMessage("");
     }
   }, [isLoggedIn, fetchMenu]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     try {
       const response = await API.post("/api/auth/login", {
         username,
         password,
       });
-
       const token = response.data?.token;
       if (token) {
         API.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -104,17 +103,15 @@ function AdminPage() {
       isVegetarian: Boolean(form.isVegetarian),
       isRecommended: Boolean(form.isRecommended),
     };
-    
+
     if (editId) {
       API.put(`/api/menu/${editId}`, formData)
-        .then((res) => {
-          console.log("Updated item:", res.data);
+        .then(() => {
           alert("Item updated!");
           resetForm();
           fetchMenu();
         })
         .catch((err) => {
-          console.error("Update error:", err);
           if (err.response?.status === 401) {
             alert("Session expired. Please log in again.");
             handleLogout();
@@ -124,14 +121,12 @@ function AdminPage() {
         });
     } else {
       API.post("/api/menu", formData)
-        .then((res) => {
-          console.log("Created item:", res.data);
+        .then(() => {
           alert("Item added!");
           resetForm();
           fetchMenu();
         })
         .catch((err) => {
-          console.error("Create error:", err);
           if (err.response?.status === 401) {
             alert("Session expired. Please log in again.");
             handleLogout();
@@ -181,229 +176,265 @@ function AdminPage() {
     setEditId(null);
   };
 
- // --- Render login if not logged in ---
-if (!isLoggedIn) {
-  return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-      <div className="card p-4 shadow-lg col-md-4">
-        <h3 className="mb-3 text-center">Admin Login</h3>
-        <form onSubmit={handleLogin}>
-          <div className="mb-3">
-            <label className="form-label">Username</label>
-            <input
-              type="text"
-              className="form-control"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              autoComplete="username"
-            />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-            />
-          </div>
-          <button
-            type="submit"
-            className="btn btn-primary w-100"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Logging in..." : "Login"}
-          </button>
-        </form>
+  // --- Login screen ---
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-stone-50 dark:bg-stone-900 px-4">
+        <div className="w-full max-w-md bg-white dark:bg-stone-800 rounded-2xl shadow-xl p-8">
+          <h3 className="text-2xl font-bold text-center text-stone-900 dark:text-stone-100 mb-6">
+            Admin Login
+          </h3>
+          <form onSubmit={handleLogin}>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                Username
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600
+                  bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100
+                  focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent
+                  transition-all duration-200"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                autoComplete="username"
+              />
+            </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                Password
+              </label>
+              <input
+                type="password"
+                className="w-full px-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600
+                  bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100
+                  focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent
+                  transition-all duration-200"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold
+                rounded-xl transition-colors duration-200 disabled:opacity-50"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Logging in..." : "Login"}
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-  
-
-  // --- Render admin dashboard if logged in ---
+  // --- Admin dashboard ---
   return (
-    <div className="container py-4">
-      {/* Admin Navbar */}
-      <nav className="navbar navbar-dark bg-dark rounded shadow-sm mb-4 px-3">
-        <span className="navbar-brand fw-bold">⚙️ Admin Dashboard</span>
-        <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>
-          Logout
-        </button>
+    <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
+      {/* Admin nav */}
+      <nav className="bg-stone-900 dark:bg-stone-950 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
+          <span className="text-white font-bold text-lg">Admin Dashboard</span>
+          <button
+            className="px-4 py-1.5 border border-stone-600 text-stone-300 rounded-lg text-sm
+              hover:bg-stone-700 transition-colors duration-200"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
       </nav>
 
-      {/* Form Card */}
-      <div className="card p-4 shadow-sm mb-5">
-        <h4 className="mb-4">{editId ? "✏️ Edit Menu Item" : "➕ Add New Menu Item"}</h4>
-        {errorMessage && (
-          <div className="alert alert-warning" role="alert">
-            {errorMessage}
-          </div>
-        )}
-        <form onSubmit={handleSubmit} className="row g-3">
-          <div className="col-md-6">
-            <label className="form-label">Name:</label>
-            <input
-              type="text"
-              name="name"
-              className="form-control"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-6">
-            <label className="form-label">Price:</label>
-            <input
-              type="number"
-              name="price"
-              className="form-control"
-              value={form.price}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-12">
-            <label className="form-label">Description:</label>
-            <textarea
-              name="description"
-              className="form-control"
-              rows="2"
-              value={form.description}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-6">
-            <label className="form-label">Category:</label>
-            <select
-              name="category"
-              className="form-select"
-              value={form.category}
-              onChange={handleChange}
-              required
-            >
-              <option value="">-- Select --</option>
-              <option value="Starters">Starters</option>
-              <option value="Mains">Mains</option>
-              <option value="Drinks">Drinks</option>
-              <option value="Desserts">Desserts</option>
-            </select>
-          </div>
-          <div className="col-md-6">
-            <label className="form-label">Image URL:</label>
-            <input
-              type="text"
-              name="image"
-              className="form-control"
-              value={form.image}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="col-12">
-            <label className="form-label d-block mb-2">Highlights:</label>
-            <div className="d-flex flex-wrap gap-3">
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="isRecommended"
-                  name="isRecommended"
-                  checked={form.isRecommended}
-                  onChange={handleChange}
-                />
-                <label className="form-check-label" htmlFor="isRecommended">
-                  ⭐ Recommended
-                </label>
-              </div>
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="isSpicy"
-                  name="isSpicy"
-                  checked={form.isSpicy}
-                  onChange={handleChange}
-                />
-                <label className="form-check-label" htmlFor="isSpicy">
-                  🌶️ Spicy
-                </label>
-              </div>
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="isVegetarian"
-                  name="isVegetarian"
-                  checked={form.isVegetarian}
-                  onChange={handleChange}
-                />
-                <label className="form-check-label" htmlFor="isVegetarian">
-                  🥗 Vegetarian
-                </label>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Form card */}
+        <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-700 p-6 mb-8">
+          <h4 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-4">
+            {editId ? "Edit Menu Item" : "Add New Menu Item"}
+          </h4>
+
+          {errorMessage && (
+            <div className="mb-4 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-300 text-sm">
+              {errorMessage}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
+                Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600
+                  bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100
+                  focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm transition-all"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
+                Price
+              </label>
+              <input
+                type="number"
+                name="price"
+                className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600
+                  bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100
+                  focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm transition-all"
+                value={form.price}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
+                Description
+              </label>
+              <textarea
+                name="description"
+                rows="2"
+                className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600
+                  bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100
+                  focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm transition-all resize-none"
+                value={form.description}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
+                Category
+              </label>
+              <select
+                name="category"
+                className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600
+                  bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100
+                  focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm transition-all"
+                value={form.category}
+                onChange={handleChange}
+                required
+              >
+                <option value="">-- Select --</option>
+                <option value="Starters">Starters</option>
+                <option value="Mains">Mains</option>
+                <option value="Drinks">Drinks</option>
+                <option value="Desserts">Desserts</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
+                Image URL
+              </label>
+              <input
+                type="text"
+                name="image"
+                className="w-full px-3 py-2 rounded-lg border border-stone-200 dark:border-stone-600
+                  bg-stone-50 dark:bg-stone-700 text-stone-900 dark:text-stone-100
+                  focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm transition-all"
+                value={form.image}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
+                Highlights
+              </label>
+              <div className="flex flex-wrap gap-4">
+                {[
+                  { name: "isRecommended", label: "Recommended" },
+                  { name: "isSpicy", label: "Spicy" },
+                  { name: "isVegetarian", label: "Vegetarian" },
+                ].map(({ name, label }) => (
+                  <label key={name} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name={name}
+                      checked={form[name]}
+                      onChange={handleChange}
+                      className="w-4 h-4 rounded border-stone-300 dark:border-stone-600
+                        text-amber-500 focus:ring-amber-400"
+                    />
+                    <span className="text-sm text-stone-700 dark:text-stone-300">
+                      {label}
+                    </span>
+                  </label>
+                ))}
               </div>
             </div>
-          </div>
-          <div className="col-12">
-            <button type="submit" className="btn btn-success w-100">
-              {editId ? "Update Item" : "Add Item"}
-            </button>
-            {editId && (
+            <div className="md:col-span-2 flex flex-col gap-2">
               <button
-                type="button"
-                className="btn btn-secondary w-100 mt-2"
-                onClick={resetForm}
+                type="submit"
+                className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold
+                  rounded-xl transition-colors duration-200"
               >
-                Cancel Edit
+                {editId ? "Update Item" : "Add Item"}
               </button>
-            )}
-          </div>
-        </form>
-      </div>
+              {editId && (
+                <button
+                  type="button"
+                  className="w-full py-2.5 bg-stone-200 dark:bg-stone-600 hover:bg-stone-300 dark:hover:bg-stone-500
+                    text-stone-700 dark:text-stone-200 font-medium rounded-xl transition-colors duration-200"
+                  onClick={resetForm}
+                >
+                  Cancel Edit
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
 
-      {/* Existing Menu Items */}
-      <h4 className="mb-3">📋 Existing Menu Items</h4>
-      <div className="row">
-        {menuItems.length === 0 ? (
-          <p>No items yet.</p>
-        ) : (
-          menuItems.map((item) => (
-            <div key={item._id} className="col-md-4 col-sm-6 mb-4">
-              <div className="card h-100 shadow-sm border-0">
+        {/* Existing menu items */}
+        <h4 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-4">
+          Existing Menu Items
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {menuItems.length === 0 ? (
+            <p className="text-stone-500 dark:text-stone-400 col-span-full">
+              No items yet.
+            </p>
+          ) : (
+            menuItems.map((item) => (
+              <div
+                key={item._id}
+                className="bg-white dark:bg-stone-800 rounded-2xl border border-stone-100 dark:border-stone-700 shadow-sm overflow-hidden flex flex-col"
+              >
                 {item.image && (
                   <img
                     src={item.image}
-                    className="card-img-top"
                     alt={item.name}
-                    style={{
-                      width: "100%",
-                      height: "200px",
-                      objectFit: "cover",
-                    }}
+                    className="w-full h-48 object-cover"
                   />
                 )}
-                <div className="card-body">
-                  <h5 className="card-title fw-bold">{item.name}</h5>
-                  <h6 className="card-subtitle mb-2 text-muted">
-                    ${item.price}
-                  </h6>
-                  <p className="card-text">{item.description}</p>
-                  <span className="badge bg-primary rounded-pill">
+                <div className="p-4 flex flex-col flex-1">
+                  <h5 className="font-bold text-stone-900 dark:text-stone-100 mb-1">
+                    {item.name}
+                  </h5>
+                  <p className="text-amber-600 dark:text-amber-400 font-semibold text-sm mb-2">
+                    ETB {item.price}
+                  </p>
+                  <p className="text-stone-500 dark:text-stone-400 text-sm mb-3 line-clamp-2">
+                    {item.description}
+                  </p>
+                  <span className="inline-block px-2.5 py-0.5 text-xs font-medium rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 mb-3 self-start">
                     {item.category}
                   </span>
-                  <div className="mt-3 d-flex justify-content-between">
+                  <div className="mt-auto flex gap-2">
                     <button
-                      className="btn btn-sm btn-warning"
+                      className="flex-1 py-1.5 text-sm font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300
+                        rounded-lg hover:bg-amber-200 dark:hover:bg-amber-800/50 transition-colors"
                       onClick={() => handleEdit(item)}
                     >
                       Edit
                     </button>
                     <button
-                      className="btn btn-sm btn-danger"
+                      className="flex-1 py-1.5 text-sm font-medium bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400
+                        rounded-lg hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors"
                       onClick={() => handleDelete(item._id)}
                     >
                       Delete
@@ -411,9 +442,9 @@ if (!isLoggedIn) {
                   </div>
                 </div>
               </div>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
