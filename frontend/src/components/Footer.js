@@ -1,42 +1,48 @@
 function Footer() {
   return (
-    <footer id="contact" className="bg-dark text-white mt-5 py-5">
-      <div className="container text-center">
-        <h4 className="fw-bold mb-3">Contact Us</h4>
-        <p className="mb-1">📞 +1 (555) 123-4567</p>
-        <p className="mb-1">✉️ support@digitalmenu.com</p>
-        <p className="mb-3">📍 123 Main Street, Food City</p>
-        <div className="mb-3">
-          🌐 Follow us:
+    <footer
+      id="contact"
+      className="bg-stone-900 dark:bg-stone-950 text-stone-300 mt-16 py-12"
+    >
+      <div className="max-w-7xl mx-auto px-4 text-center">
+        <h4 className="text-white font-bold text-xl mb-4">Contact Us</h4>
+        <p className="mb-1">+1 (555) 123-4567</p>
+        <p className="mb-1">support@digitalmenu.com</p>
+        <p className="mb-4">123 Main Street, Food City</p>
+
+        <div className="flex items-center justify-center gap-4 mb-4">
           <a
             href="https://www.facebook.com"
-            className="text-white ms-2"
+            className="text-stone-400 hover:text-white transition-colors no-underline"
             target="_blank"
             rel="noopener noreferrer"
           >
             Facebook
-          </a>{" "}
-          |
+          </a>
+          <span className="text-stone-600">|</span>
           <a
             href="https://www.instagram.com"
-            className="text-white ms-2"
+            className="text-stone-400 hover:text-white transition-colors no-underline"
             target="_blank"
             rel="noopener noreferrer"
           >
             Instagram
-          </a>{" "}
-          |
+          </a>
+          <span className="text-stone-600">|</span>
           <a
             href="https://www.twitter.com"
-            className="text-white ms-2"
+            className="text-stone-400 hover:text-white transition-colors no-underline"
             target="_blank"
             rel="noopener noreferrer"
           >
             Twitter
           </a>
         </div>
-        <p className="mb-3">🕒 Open Daily: 10:00 AM – 11:00 PM</p>
-        <p className="mb-0">
+
+        <p className="text-sm text-stone-500 mb-1">
+          Open Daily: 10:00 AM - 11:00 PM
+        </p>
+        <p className="text-sm text-stone-500">
           &copy; {new Date().getFullYear()} Digital Menu. All rights reserved.
         </p>
       </div>

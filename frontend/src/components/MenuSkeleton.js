@@ -1,16 +1,14 @@
 function MenuSkeleton() {
   return (
-    <div className="col-md-4 col-sm-6 mb-4">
-      <div className="card h-100 border-0 skeleton-card">
-        <div className="skeleton skeleton-img" />
-        <div className="card-body">
-          <div className="skeleton skeleton-title mb-2" />
-          <div className="skeleton skeleton-text mb-1" />
-          <div className="skeleton skeleton-text w-75 mb-3" />
-          <div className="d-flex gap-2">
-            <div className="skeleton skeleton-badge" />
-            <div className="skeleton skeleton-badge" />
-          </div>
+    <div className="rounded-2xl overflow-hidden bg-white dark:bg-stone-800 border border-stone-100 dark:border-stone-700 shadow-sm">
+      <div className="skeleton-shimmer h-52 w-full" />
+      <div className="p-4">
+        <div className="skeleton-shimmer h-5 w-3/5 mb-3 rounded" />
+        <div className="skeleton-shimmer h-3.5 w-full mb-2 rounded" />
+        <div className="skeleton-shimmer h-3.5 w-4/5 mb-4 rounded" />
+        <div className="flex gap-2">
+          <div className="skeleton-shimmer h-5 w-16 rounded-full" />
+          <div className="skeleton-shimmer h-5 w-14 rounded-full" />
         </div>
       </div>
     </div>

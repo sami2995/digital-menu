@@ -1,116 +1,110 @@
+import { useEffect } from "react";
+
 function MenuItemModal({ item, onClose }) {
+  useEffect(() => {
+    if (item) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [item]);
+
   if (!item) return null;
 
   return (
-    <>
-      <style>{`
-        .menu-modal-backdrop {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          padding: 20px;
-          z-index: 2000;
-        }
+    <div
+      className="fixed inset-0 z-[999] flex items-center justify-center p-4 modal-backdrop-enter"
+      role="dialog"
+      aria-modal="true"
+    >
+      {/* Overlay */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
-        .menu-modal {
-          position: relative;
-          max-width: 500px;
-          width: 100%;
-          background: white;
-          border-radius: 16px;
-          padding: 20px;
-          overflow-y: auto;
-          max-height: 90vh;
-        }
+      {/* Modal content */}
+      <div
+        className="relative max-w-lg w-full bg-white dark:bg-stone-800
+          rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh] modal-content-enter"
+      >
+        {/* Close button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center
+            rounded-full bg-white/90 dark:bg-stone-700/90 shadow-md
+            text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white
+            transition-colors duration-200"
+          aria-label="Close"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
 
-        /* FIXED: Visible + functional close button */
-        .menu-modal .btn-close {
-          position: absolute;
-          top: 12px;
-          right: 12px;
-          width: 34px;
-          height: 34px;
+        {/* Image */}
+        {item.image && (
+          <img
+            src={item.image}
+            alt={item.name}
+            className="w-full h-64 object-cover"
+          />
+        )}
 
-          background-color: white !important;
-          border: 2px solid #00000022;
-          border-radius: 50%;
-          padding: 8px;
+        {/* Body */}
+        <div className="p-6">
+          <h3 className="text-2xl font-bold text-stone-900 dark:text-stone-100 mb-2">
+            {item.name}
+          </h3>
+          <p className="text-amber-600 dark:text-amber-400 font-semibold text-lg mb-4">
+            ETB {item.price}
+          </p>
 
-          opacity: 1 !important;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-
-          z-index: 9999;
-        }
-
-        .menu-modal img {
-          width: 100%;
-          height: auto;
-          max-height: 250px;
-          object-fit: cover;
-          border-radius: 12px;
-        }
-
-        .menu-modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.5);
-          z-index: 1000;
-        }
-      `}</style>
-
-      <div className="menu-modal-backdrop" role="dialog" aria-modal="true">
-        <div className="menu-modal card shadow-lg">
-          <button
-            type="button"
-            className="btn-close"
-            aria-label="Close"
-            onClick={onClose}
-          ></button>
-
-          <div className="modal-body">
-            {item.image && (
-              <img
-                src={item.image}
-                alt={item.name}
-                className="img-fluid rounded mb-3"
-              />
+          {/* Badges */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {item.category && (
+              <span className="px-3 py-1 text-xs font-medium rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+                {item.category}
+              </span>
             )}
-
-            <h3 className="fw-bold mb-2">{item.name}</h3>
-            <p className="text-muted mb-1">ETB {item.price}</p>
-
-            <div className="mb-3">
-              {item.category && (
-                <span className="badge bg-primary me-2">{item.category}</span>
-              )}
-              {item.isSpicy && (
-                <span className="badge bg-danger me-2">🌶️ Spicy</span>
-              )}
-              {item.isVegetarian && (
-                <span className="badge bg-success me-2">🥗 Vegetarian</span>
-              )}
-              {item.isRecommended && (
-                <span className="badge bg-warning text-dark">⭐ Recommended</span>
-              )}
-            </div>
-
-            <p className="mb-0">
-              {item.description || "No description available."}
-            </p>
+            {(item.isSpicy === true || item.isSpicy === "true") && (
+              <span className="px-3 py-1 text-xs font-medium rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400">
+                Spicy
+              </span>
+            )}
+            {(item.isVegetarian === true || item.isVegetarian === "true") && (
+              <span className="px-3 py-1 text-xs font-medium rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400">
+                Vegetarian
+              </span>
+            )}
+            {(item.isRecommended === true || item.isRecommended === "true") && (
+              <span className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300">
+                Recommended
+              </span>
+            )}
           </div>
-        </div>
 
-        <div className="menu-modal-overlay" onClick={onClose} />
+          <p className="text-stone-600 dark:text-stone-300 leading-relaxed">
+            {item.description || "No description available."}
+          </p>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
